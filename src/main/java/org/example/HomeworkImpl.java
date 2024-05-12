@@ -1,9 +1,10 @@
 package org.example;
 
 import org.apache.commons.io.FileUtils;
-
+import java.io.UncheckedIOException;
 import java.io.File;
 import java.io.IOException;
+
 import java.nio.file.NotDirectoryException;
 import java.util.InputMismatchException;
 import java.util.Iterator;
@@ -110,8 +111,15 @@ public class HomeworkImpl {
      *
      * @param path File object representing the directory
      */
+
     public static void filterFilesAt(File path) {
-        Iterator<File> itr = FileUtils.iterateFiles(path, null, askSubDirs());
+        Iterator<File> itr = null;
+        try {
+            itr = FileUtils.iterateFiles(path, null, askSubDirs());
+        } catch (UncheckedIOException e) {
+            System.out.println("Access denied. Please check file permissions.");
+            return;
+        }
         int index = 0;
         double mbLimit = askMbLimit();
         while (itr.hasNext()) {
@@ -124,4 +132,5 @@ public class HomeworkImpl {
         }
         System.out.printf("Found %d file(s) larger than %.2f MB.%n", index, mbLimit);
     }
+
 }
